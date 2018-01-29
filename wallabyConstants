@@ -1,0 +1,5 @@
+static double wheelDiameter = 6.75;
+static double speed = 1000;
+static double friction = 1;
+static double distMultiplier = 1.754;
+static double angleMultiplier = 13;
