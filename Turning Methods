@@ -1,0 +1,18 @@
+static double angleMultiplier = 13;
+void turnLeft(double angle) {
+    printf("I'm turning left\n");
+    enable_servos();
+    mav(1, 500);
+    mav(0, 500);
+    msleep(angle*angleMultiplier);
+    disable_servos();
+}
+
+void turnRight(double angle) {
+    printf("I'm turning right\n");
+    enable_servos();
+    mav(1, -500);
+    mav(0, -500);
+    msleep(angle*angleMultiplier);
+    disable_servos();
+}
