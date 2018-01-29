@@ -1,0 +1,15 @@
+void moveForward(double distance) {
+    double ticks = abs(1000000*(distance*49/48)*friction/(3.14159265358979*wheelDiameter*speed))*distMultiplier;
+    if (direction == 1) printf("I'm moving forward \n"); else printf("I'm moving backward \n");
+    mav(1, 700)
+    mav(0, -700);
+    msleep(ticks);
+}
+
+void moveBackward(double distance) {
+    double ticks = abs(1000000*(distance*49/48)*friction/(3.14159265358979*wheelDiameter*speed))*distMultiplier;
+    if (direction == 1) printf("I'm moving forward \n"); else printf("I'm moving backward \n");
+    mav(1, -700)
+    mav(0, 700);
+    msleep(ticks);
+}
