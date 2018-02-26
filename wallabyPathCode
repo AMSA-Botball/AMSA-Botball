@@ -1,0 +1,11 @@
+int main() {
+//wallaby faces the aquifier at the start. must be placed in the starting bin nearest the end bin
+	moveForward(122); //movement methods can be found on this repository
+  turnLeft(90);
+  moveForward(60);
+  clamp(); //positive for opening movement, negative for closing movement. based on a motor, not a servo
+  moveBackward(30);
+  turnLeft(90);
+  moveForward(122); // go freaking ham
+  clamp();
+}
