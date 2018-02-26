@@ -1,0 +1,49 @@
+static double wheelDiameter = 6.75;
+static double speed = 1000;
+static double friction = 1;
+static double distMultiplier = 1.754;
+static double angleMultiplier = 13;
+int main() {
+//wallaby faces the aquifier at the start. must be placed in the starting bin nearest the end bin
+	moveForward(122); //movement methods can be found on this repository
+  turnLeft(90);
+  moveForward(60);
+  clamp(); //positive for opening movement, negative for closing movement. based on a motor, not a servo
+  moveBackward(30);
+  turnLeft(90);
+  moveForward(122); // go freaking ham
+  clamp();
+}
+void moveForward(double distance) {
+    double ticks = abs(1000000*(distance*49/48)*friction/(3.14159265358979*wheelDiameter*speed))*distMultiplier;
+    if (direction == 1) printf("I'm moving forward \n"); else printf("I'm moving backward \n");
+    mav(1, 700)
+    mav(0, -700);
+    msleep(ticks);
+}
+
+void moveBackward(double distance) {
+    double ticks = abs(1000000*(distance*49/48)*friction/(3.14159265358979*wheelDiameter*speed))*distMultiplier;
+    if (direction == 1) printf("I'm moving forward \n"); else printf("I'm moving backward \n");
+    mav(1, -700)
+    mav(0, 700);
+    msleep(ticks);
+}
+static double angleMultiplier = 13;
+void turnLeft(double angle) {
+    printf("I'm turning left\n");
+    enable_servos();
+    mav(1, 500);
+    mav(0, 500);
+    msleep(angle*angleMultiplier);
+    disable_servos();
+}
+
+void turnRight(double angle) {
+    printf("I'm turning right\n");
+    enable_servos();
+    mav(1, -500);
+    mav(0, -500);
+    msleep(angle*angleMultiplier);
+    disable_servos();
+}
