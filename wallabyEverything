@@ -4,19 +4,9 @@ static double speed = 1000;
 static double friction = 1;
 static double distMultiplier = 1.754;
 static double angleMultiplier = 13;
-int main() {
-//wallaby faces the aquifier at the start. must be placed in the starting bin nearest the end bin
-	moveForward(122); //movement methods can be found on this repository
-  turnLeft(90);
-  moveForward(60);
-  clamp(); //positive for opening movement, negative for closing movement. based on a motor, not a servo
-  moveBackward(30);
-  turnLeft(90);
-  moveForward(122); // go freaking ham
-  clamp();
-}
+static double pi = 3.14159265358979;
 void moveForward(double distance) {
-    double ticks = abs(1000000*(distance*49/48)*friction/(3.14159265358979*wheelDiameter*speed))*distMultiplier;
+    double ticks = abs(1000000*(distance*49/48)*friction/(pi*wheelDiameter*speed))*distMultiplier;
     if (direction == 1) printf("I'm moving forward \n"); else printf("I'm moving backward \n");
     mav(1, 700)
     mav(0, -700);
@@ -24,13 +14,13 @@ void moveForward(double distance) {
 }
 
 void moveBackward(double distance) {
-    double ticks = abs(1000000*(distance*49/48)*friction/(3.14159265358979*wheelDiameter*speed))*distMultiplier;
+    double ticks = abs(1000000*(distance*49/48)*friction/(pi*wheelDiameter*speed))*distMultiplier;
     if (direction == 1) printf("I'm moving forward \n"); else printf("I'm moving backward \n");
     mav(1, -700)
     mav(0, 700);
     msleep(ticks);
 }
-static double angleMultiplier = 13;
+
 void turnLeft(double angle) {
     printf("I'm turning left\n");
     enable_servos();
@@ -47,4 +37,29 @@ void turnRight(double angle) {
     mav(0, -500);
     msleep(angle*angleMultiplier);
     disable_servos();
+}
+
+void clamp(double position){
+  if (position == 180) { printf("closing claw"); }
+  else if (position == 0) { printf("opening claw") }
+  else { printf("idk what I'm doing here man"); }
+  set_servo_position(port, position);
+  // 180 for closed, 0 for open
+}
+
+int main() {
+	// wallaby faces the aquifier at the start. must be placed in the starting bin nearest the end bin
+  // wait_for_light(0);
+  shut_down_in(119);
+  // movement methods can be found on this repository
+	moveForward(122); // move to cross-section of center path
+  turnLeft(90); // turn towards yellow crate
+  // maybe add a check to make sure we're on the path to the yellow crate?
+  moveForward(60); // move towards yellow crate
+  clamp(0); // 0 for open? 180 for close?
+  moveBackward(30); 
+  turnLeft(90);
+  moveForward(122);
+  clamp(180.0);
+  return 0;
 }
