@@ -1,0 +1,23 @@
+#include <kipr/botball.h>
+
+int main()
+{
+    printf("Hello World\n");
+    return 0;
+}
+
+void lin_up(){
+    while(digital(0) = 0){
+        mav(0,100);
+        mav(1,-100);
+        msleep(50);
+    }
+}
+
+void lin_down(){
+    while(digital(0) = 0){
+        mav(0,-100);
+        mav(1,100);
+        msleep(50);
+    }
+}
