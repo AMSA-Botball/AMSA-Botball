@@ -1,13 +1,27 @@
-#include <kipr/botball.h>
-
 int main()
 {
-    printf("Hello World\n");
+    /* PSUDOCODE
+    slide up
+    claw close
+    repeat(~8 times){
+    	slide down
+    	move forward
+    }
+    claw open*/
+    
+    lin_up();
+    //claw close
+    int x = 8;
+    while (x != 0){
+    	lin_down_little();
+        //move_forward(dis)
+    }
+    
     return 0;
 }
 
 void lin_up(){
-    while(digital(0) = 0){
+    while(digital(0) == 0){
         mav(0,100);
         mav(1,-100);
         msleep(50);
@@ -15,9 +29,23 @@ void lin_up(){
 }
 
 void lin_down(){
-    while(digital(0) = 0){
+    while(digital(1) == 0){
         mav(0,-100);
         mav(1,100);
         msleep(50);
     }
 }
+
+void lin_down_little(){
+    mav(0,-400);
+    mav(1,400);
+    msleep(3.5);
+}
+
+void lin_up_little(){
+    mav(0,400);
+    mav(1,-400);
+    msleep(3.5);
+}
+
+void move_forward(dis){
