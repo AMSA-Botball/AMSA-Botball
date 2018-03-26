@@ -1,3 +1,13 @@
+#include <kipr/botball.h>
+void lin_up();
+void lin_down();
+void lin_up_little();
+void lin_down_little();
+void moveForward(double distance);
+void moveBackward(double distance);
+void closeClaw();
+void openClaw();
+    
 int main()
 {
     /* PSUDOCODE
@@ -7,20 +17,23 @@ int main()
     	slide down
     	move forward
     }
-    claw open*/
+    */
+    enable_servos();
+    create_connect();
     
     lin_up();
-    //claw close
-    int x = 8;
-    while (x != 0){
+    closeClaw();
+    int x = 1;
+    while (x != 8){ //repeats 8 times
     	lin_down_little();
-        //move_forward(dis)
-    }
+        moveForward(2.5);
+        x ++;
+    } 
     
     return 0;
 }
 
-void lin_up(){
+void lin_up(){ //makes slide go up all the way
     while(digital(0) == 0){
         mav(0,100);
         mav(1,-100);
@@ -28,7 +41,7 @@ void lin_up(){
     }
 }
 
-void lin_down(){
+void lin_down(){ //makes slide go down all the way
     while(digital(1) == 0){
         mav(0,-100);
         mav(1,100);
@@ -36,16 +49,41 @@ void lin_down(){
     }
 }
 
-void lin_down_little(){
+void lin_down_little(){ //makes slide go down a little 
     mav(0,-400);
     mav(1,400);
     msleep(3.5);
 }
 
-void lin_up_little(){
+void lin_up_little(){ //makes slide go up a little
     mav(0,400);
     mav(1,-400);
     msleep(3.5);
 }
 
-void move_forward(dis){
+void moveForward(double distance){ //makes create go forward
+    distance *= 8.3;
+    int time = (1000*distance/100);
+    create_drive_direct(-100, -100);
+    msleep(time);
+    create_stop();
+}
+
+void moveBackward(double distance){ //makes create go backward
+    distance *= 8.3;
+    int time = (1000*distance/100);
+    create_drive_direct(100, 100);
+    msleep(time);
+    create_stop();
+}
+
+void closeClaw(){
+    set_servo_position(0, 1277);
+    msleep(500);
+}
+
+void openClaw(){
+    set_servo_position(0, 1900);
+    msleep(500);
+}
+    
