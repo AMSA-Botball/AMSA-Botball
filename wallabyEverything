@@ -1,4 +1,6 @@
 #include <kipr/botball.h>
+#include <stdbool.h>
+
 static double wheelDiameter = 6.75;
 static double speed = 1000;
 static double friction = 1;
@@ -7,59 +9,148 @@ static double angleMultiplier = 13;
 static double pi = 3.14159265358979;
 void moveForward(double distance) {
     double ticks = abs(1000000*(distance*49/48)*friction/(pi*wheelDiameter*speed))*distMultiplier;
-    if (direction == 1) printf("I'm moving forward \n"); else printf("I'm moving backward \n");
-    mav(1, 700)
+    printf("I'm moving forward \n");
+    mav(1, 700);
     mav(0, -700);
     msleep(ticks);
+    ao();
 }
 
 void moveBackward(double distance) {
     double ticks = abs(1000000*(distance*49/48)*friction/(pi*wheelDiameter*speed))*distMultiplier;
-    if (direction == 1) printf("I'm moving forward \n"); else printf("I'm moving backward \n");
-    mav(1, -700)
+    printf("I'm moving backward \n");
+    mav(1, -700);
     mav(0, 700);
     msleep(ticks);
+    ao();
 }
 
 void turnLeft(double angle) {
     printf("I'm turning left\n");
-    enable_servos();
-    mav(1, 500);
-    mav(0, 500);
+    mav(1, -500);
+    mav(0, -500);
     msleep(angle*angleMultiplier);
-    disable_servos();
+    ao();
 }
 
 void turnRight(double angle) {
     printf("I'm turning right\n");
-    enable_servos();
-    mav(1, -500);
-    mav(0, -500);
+    mav(1, 500);
+    mav(0, 500);
     msleep(angle*angleMultiplier);
-    disable_servos();
+    ao();
 }
 
 void clamp(double position){
   if (position == 180) { printf("closing claw"); }
-  else if (position == 0) { printf("opening claw") }
+  else if (position == 0) { printf("opening claw"); }
   else { printf("idk what I'm doing here man"); }
-  set_servo_position(port, position);
+  set_servo_position(2, position);
   // 180 for closed, 0 for open
 }
 
+bool isYellow() {
+    camera_open();
+    bool y = false;
+    int iter = 0;
+		while (iter < 10 && !y) {
+        camera_update(); // updates camera to most recent image
+        if (get_object_count(0) > 0) {
+        	printf("\nYellow count: %i", get_object_area(0,0));
+          if (get_object_area(0,0) >= 1000) {
+              y = true;
+          }
+        } else { printf("\nNo object found!"); }
+        msleep(500);
+     	iter = iter + 1;
+  	}
+    return y;
+}
+int getACube(int spot){
+  //under the assumption that the claw is the front of the robot:
+  if(spot==1){
+    moveForward(45);
+    turnLeft(90);
+    moveForward(60);
+    clampClaw(2030);
+    clampClaw(100);
+    moveBackward(60);
+    turnRight(90);
+    moveBackward(45);
+    turnRight(90);
+    clampClaw(2030);
+  }
+  else if(spot==2){
+    turnLeft(90);
+    moveForward(60);
+    clampClaw(100);
+    moveBackward(60);
+    turnRight(180);
+    clampClaw(2030);
+  }
+  else if(spot == 3){
+    moveBackward(45);
+    turnLeft(90);
+    moveForward(60);
+    clampClaw(2030)
+    moveBackward(60);
+    turnRight(90);
+    moveForward(45);
+    turnRight(90);
+    clampClaw(2030)
+  }
+  else{
+    printf("You really messed up on this one mayng");
+  }
+  return 0;
+}
+void clampClaw(int position){ // 2030 for opened, 100 for closed
+    enable_servos();
+    set_servo_position(0,position);
+}
 int main() {
-	// wallaby faces the aquifier at the start. must be placed in the starting bin nearest the end bin
-  // wait_for_light(0);
+	// wallaby is placed in the starting bin nearest the end bin
+    //wait_for_light(0);
+    //shut_down_in(120);
+  enable_servos();
+	int spot = 0;
   shut_down_in(119);
-  // movement methods can be found on this repository
-	moveForward(122); // move to cross-section of center path
-  turnLeft(90); // turn towards yellow crate
-  // maybe add a check to make sure we're on the path to the yellow crate?
-  moveForward(60); // move towards yellow crate
-  clamp(0); // 0 for open? 180 for close?
-  moveBackward(30); 
-  turnLeft(90);
-  moveForward(122);
-  clamp(180.0);
+	moveBackward(43);
+  if (isYellow()) { spot = 1; }
+  else { 
+      moveBackward(59);
+  	  if (isYellow()) { spot = 2; }
+  	  else { spot = 3; }
+  }
+  printf("\nThe yellow cube is in section ");
+  printf("%i", spot);
+  
+  moveForward(10);
+  msleep(500);
+  turnRight(90);
+  msleep(500);
+  moveForward(70);
+  getACube(spot);
+  
+  //Do you want to put this into a method?
+  /* move forward to black line
+   * turn right
+   * move forward ??? distance
+   * stop, turn right
+   * check color of cube
+   * if cube is yellow, set yellowCube to 1
+   * turn left
+   * move forward ??? distance
+   * stop, turn right
+   * check color of cube
+   * if cube is yellow, set yellowCube to 2
+   * otherwise, set yellowCube to 3
+   * move forward ??? distance
+   * turn left
+   * move forward, grab block
+   * back up, turn around
+   * depending on yellowCube, go towards one of the rooms, drop off yellow block
+   */
+  disable_servos();
   return 0;
 }
