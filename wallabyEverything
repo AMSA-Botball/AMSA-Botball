@@ -41,12 +41,11 @@ void turnRight(double angle) {
     ao();
 }
 
-void clamp(double position){
-  if (position == 180) { printf("closing claw"); }
-  else if (position == 0) { printf("opening claw"); }
-  else { printf("idk what I'm doing here man"); }
-  set_servo_position(2, position);
-  // 180 for closed, 0 for open
+void clampClaw(int position){ // 1 for opened, 0 for closed
+    enable_servos();
+    if (position == 0) { printf("Closing claw!\n"); }
+    else { position = 1; printf("Opening claw!\n"); }
+    set_servo_position(0,(position*1600)+100);
 }
 
 bool isYellow() {
@@ -56,101 +55,85 @@ bool isYellow() {
 		while (iter < 10 && !y) {
         camera_update(); // updates camera to most recent image
         if (get_object_count(0) > 0) {
-        	printf("\nYellow count: %i", get_object_area(0,0));
+        	printf("Yellow count: %i\n", get_object_area(0,0));
           if (get_object_area(0,0) >= 1000) {
               y = true;
           }
-        } else { printf("\nNo object found!"); }
+        } else { printf("No object found!\n"); }
         msleep(500);
      	iter = iter + 1;
   	}
     return y;
 }
-int getACube(int spot){
-  //under the assumption that the claw is the front of the robot:
-  if(spot==1){
-    moveForward(45);
-    turnLeft(90);
-    moveForward(60);
-    clampClaw(2030);
-    clampClaw(100);
-    moveBackward(60);
-    turnRight(90);
-    moveBackward(45);
-    turnRight(90);
-    clampClaw(2030);
-  }
-  else if(spot==2){
-    turnLeft(90);
-    moveForward(60);
-    clampClaw(100);
-    moveBackward(60);
-    turnRight(180);
-    clampClaw(2030);
-  }
-  else if(spot == 3){
-    moveBackward(45);
-    turnLeft(90);
-    moveForward(60);
-    clampClaw(2030)
-    moveBackward(60);
-    turnRight(90);
-    moveForward(45);
-    turnRight(90);
-    clampClaw(2030)
-  }
-  else{
-    printf("You really messed up on this one mayng");
-  }
-  return 0;
-}
-void clampClaw(int position){ // 2030 for opened, 100 for closed
-    enable_servos();
-    set_servo_position(0,position);
-}
+
 int main() {
 	// wallaby is placed in the starting bin nearest the end bin
     //wait_for_light(0);
-    //shut_down_in(120);
-  enable_servos();
+    
+	shut_down_in(120);
+	enable_servos();
+    clampClaw(0);
 	int spot = 0;
-  shut_down_in(119);
-	moveBackward(43);
-  if (isYellow()) { spot = 1; }
-  else { 
-      moveBackward(59);
-  	  if (isYellow()) { spot = 2; }
-  	  else { spot = 3; }
-  }
-  printf("\nThe yellow cube is in section ");
-  printf("%i", spot);
+	moveBackward(46);
+	if (isYellow()) { 
+    	spot = 1; 
+  		moveBackward(56);
+   		msleep(500);
+	}
+	else { 
+    	moveBackward(56);
+  		if (isYellow()) { spot = 2; }
+  	  	else { spot = 3; }
+	}
+    printf("The yellow cube is in section %i\n", spot);
+
+    // grab cubes
+    moveForward(12);
+    msleep(500);
+    turnRight(85);
+    msleep(500);
+    clampClaw(1);
+    msleep(500);
+    moveForward(70);
+    msleep(500);
+    clampClaw(0);
+    msleep(500);
+    moveBackward(34);
+    msleep(500);
+    turnLeft(86);
+    msleep(500);
+    moveForward(102);
+    msleep(500);
+    moveBackward(102);
+    msleep(500);
+    turnRight(174);
+    msleep(500);
+    moveForward(102);
+    msleep(500);
+    moveBackward(102);
+    msleep(500);
+    turnRight(85);
+    msleep(500);
   
-  moveForward(10);
-  msleep(500);
-  turnRight(90);
-  msleep(500);
-  moveForward(70);
-  getACube(spot);
+	// move to the cube
+    if (spot == 1) { 
+        turnRight(28);
+        msleep(500);
+        moveForward(55);
+    }
+    else if (spot == 2) { 
+        turnRight(3);
+        msleep(500);
+        moveForward(42);
+    }
+    else if (spot == 3) { 
+        turnLeft(28);
+        msleep(500);
+        moveForward(55);
+    }
+    
+    msleep(500);
   
-  //Do you want to put this into a method?
-  /* move forward to black line
-   * turn right
-   * move forward ??? distance
-   * stop, turn right
-   * check color of cube
-   * if cube is yellow, set yellowCube to 1
-   * turn left
-   * move forward ??? distance
-   * stop, turn right
-   * check color of cube
-   * if cube is yellow, set yellowCube to 2
-   * otherwise, set yellowCube to 3
-   * move forward ??? distance
-   * turn left
-   * move forward, grab block
-   * back up, turn around
-   * depending on yellowCube, go towards one of the rooms, drop off yellow block
-   */
-  disable_servos();
-  return 0;
+	disable_servos();
+	return 0;
 }
