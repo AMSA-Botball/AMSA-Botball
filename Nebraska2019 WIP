@@ -1,3 +1,4 @@
+//Unfinished!! Don't run
 //constants
 static double wheelDiameter = 6.75;
 static double speed = 1000;
@@ -8,7 +9,9 @@ static double angleMultiplier = 13;
 int main() {
   //wait for light (0)
   shut_down_in(120);
-	enable_servos();
+  enable_servos();
+  moveForward(20);
+  
   //path code is still in the works
   disable_servos();
 }
