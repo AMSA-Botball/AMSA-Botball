@@ -1,0 +1,142 @@
+functionLibrary/include/cameraMethods.h000644 000000 000000 00000000021 13022102355 016730 0ustar00000000 000000 int findObject();functionLibrary/include/createMethods.h000644 000000 000000 00000000207 13022102762 016753 0ustar00000000 000000 void moveForward();
+void moveBackward();
+
+void turnLeft();
+void turnRight();
+void turnLeft45();
+void turnRight45();
+void turnLeft180();functionLibrary/src/cameraMethods.c000644 000000 000000 00000001034 13022101345 016072 0ustar00000000 000000 #include <kipr/botball.h>
+
+int findObject(int chanNum, int num){ 
+	/*checks for an object in channel chanNum num times and counts -1 for not there and 1 for there.
+		Returns 1 if count is greater than 0, returns 0 otherwise*/
+    camera_open_black();
+    int count = 0;
+    
+    int i = 0;
+    for (i=0; i<num; i++){
+        camera_update();
+        if (get_object_count(chanNum) > 0){
+            count++;
+        }else{
+            count-=1;
+        }
+    }
+    
+    if (count > 0){
+        return 1;
+    }else{
+        return 0;
+    }
+}
+functionLibrary/src/createMethods.c000644 000000 000000 00000003742 13022102734 016120 0ustar00000000 000000 #include <kipr/botball.h>
+
+void moveForward(double distance, double speed){
+// this will work only for distance in centimeters and at 300 speed, this method is set up for the create
+    double multiplier1 = 10.35;
+    distance *= multiplier1;
+    int time = (int)(1000*distance/speed);
+    create_drive_direct(speed, speed*1.07);
+    msleep(time);
+    create_drive_direct(0,0);
+}
+
+
+void moveBackward(double distance, int speed){
+    // this will work only for distance in centimeters and at 100 speed, this method is set up for the create
+    distance *= 10.35;
+    int time = (int)(1000*distance/speed);
+    create_drive_direct(-speed, -speed*1.075);
+    msleep(time);
+    create_drive_direct(0,0);
+}
+
+
+void turnLeft(double angle){
+set_create_total_angle(0);
+    while(1){
+        if(get_create_total_angle()< angle*1.12){ 
+            create_drive_direct(-50,50);
+        }
+        else{
+            break;
+        }
+    }
+}
+
+
+void turnRight(double angle){ 
+	set_create_total_angle(0);
+    while(1){
+        if(get_create_total_angle()> -angle*1.12){
+            create_drive_direct(50,-50);
+        }
+        else{
+            break;
+        }
+    }
+}
+
+
+void turnRight180(){
+    set_create_total_angle(0);
+    while(1){
+        if(get_create_total_angle()> -180*1.14){
+            create_drive_direct(50,-50);
+        }
+        else{
+            break;
+        }
+	}
+}
+
+
+
+void turnRight45(){
+	set_create_total_angle(0);
+    while(1){
+        if(get_create_total_angle()> -45*1.1){ 
+            create_drive_direct(50,-50);
+        }
+        else{
+            break;
+        }
+	}
+}
+
+
+void turnLeft180(){
+    set_create_total_angle(0);
+    while(1){
+        if(get_create_total_angle()< 180*1.14){
+            create_drive_direct(-50,50);
+        }
+        else{
+            break;
+        } 
+    } 
+}
+
+
+void turnLeft45(){
+    set_create_total_angle(0);
+    while(1){
+        if(get_create_total_angle()> -45*1.1){ 
+            create_drive_direct(50,-50);
+        }
+        else{
+            break;
+        }
+    }
+}
+functionLibrary/src/main.c000644 000000 000000 00000000272 13022103072 014244 0ustar00000000 000000 #include <kipr/botball.h>
+#include "createMethods.h"
+#include "cameraMethods.h"
+
+int main()
+{
+    create_connect();
+    moveBackward(100, 300.0);
+    create_disconnect();
+    return 0;
+}
